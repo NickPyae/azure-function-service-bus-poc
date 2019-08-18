@@ -2,7 +2,7 @@ const { ServiceBusClient, ReceiveMode } = require('@azure/service-bus');
 
 // Define connection string and related Service Bus entity names here
 const connectionString =
-  'Endpoint=sb://callidus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yXlA7PSZ3hl6y9cGWSWxAGPEFRWK7br51q40fkqgNjY=';
+  'Endpoint=sb://callidus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=RFvjeP19OsVwxZT3Nur5NjRJNHJFmILxA7czOETPStI=';
 
 async function publishToTopic(data) {
   console.log('Data received from request: ', data);
@@ -10,6 +10,8 @@ async function publishToTopic(data) {
   const { type } = data;
 
   const topicName = `${type}`;
+
+  console.log('publishToTopic topicName: ', topicName);
 
   const sbClient = ServiceBusClient.createFromConnectionString(
     connectionString
@@ -26,11 +28,10 @@ async function publishToTopic(data) {
     console.log(`Sending message: ${message.body}`);
 
     await sender.send(message);
-
-    await topicClient.close();
   } catch (error) {
-    console.error('Error in sendMessage: ', error);
+    console.error('Error in publishToTopic: ', error);
   } finally {
+    await topicClient.close();
     await sbClient.close();
   }
 }
@@ -42,6 +43,9 @@ async function subscribeToTopic(type) {
 
   const topicName = type;
   const subscriptionName = `${type}-sub`;
+
+  console.log('subscribeToTopic topicName: ', topicName);
+  console.log('subscriptionName: ', subscriptionName);
 
   const subscriptionClient = sbClient.createSubscriptionClient(
     topicName,
